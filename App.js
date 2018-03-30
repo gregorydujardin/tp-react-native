@@ -1,23 +1,34 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { TabNavigator } from 'react-navigation';
+import ListScreen from './ListScreen';
+import MapScreen from './MapScreen' ;
+
+const AppWithData = TabNavigator({
+  List: { screen: ListScreen},
+  Map: { screen: MapScreen}
+});
 
 export default class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      jobs : []
+    }
+  }
+
+  componentDidMount() {
+    fetch('https://mobile-api-jobs.herokuapp.com/api/jobs')
+      .then(data => data.json())
+      .then(jobs => {
+        this.setState({jobs})
+      })
+      .catch(console.error)
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-        <Text>Changes you make will automatically reload.</Text>
-        <Text>Shake your phone to open the developer menu.</Text>
-      </View>
-    );
+      <AppWithData screenProps={{jobs:this.state.jobs}} />
+    )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
